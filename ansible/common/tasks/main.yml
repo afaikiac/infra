@@ -1,0 +1,43 @@
+---
+
+- name: Check mandatory variables are defined
+  assert:
+    that:
+      - username is defined
+      - groupname is defined
+      - upgrade_system is defined
+ 
+- name: Setup user
+  block:
+    - name: Create system group
+      group:
+        name: '{{ groupname }}'
+        system: true
+    
+    - name: Create system user
+      user:
+        name: '{{ username }}'
+        shell: '/bin/bash'
+        group: "{{ groupname }}"
+        system: true
+        createhome: true
+       
+    - name: Add SSH key to user
+      authorized_key:
+        user: "{{ username }}"
+        state: present
+        key: "{{ lookup('file', pub_key) }}"
+
+- name: Apt moments...
+  block:
+    - name: Wait for apt to unlock
+      shell:  while sudo fuser /var/lib/dpkg/lock >/dev/null 2>&1; do sleep 5; done;
+
+    - name: Update
+      apt:
+        update_cache: yes
+
+    - name: Upgrade
+      when: upgrade_system is true
+      apt:
+        upgrade: yes

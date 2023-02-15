@@ -1,0 +1,7 @@
+# See https://miniflux.app/docs/configuration.html
+
+CLEANUP_ARCHIVE_UNREAD_DAYS=-1
+CLEANUP_ARCHIVE_READ_DAYS=-1
+DATABASE_URL="user=miniflux password={{ miniflux_db_password }} dbname=miniflux sslmode=disable"
+LISTEN_ADDR={{ backend_listen }}:{{ backend_port }}
+RUN_MIGRATIONS=1

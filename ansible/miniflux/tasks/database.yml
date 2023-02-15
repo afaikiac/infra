@@ -1,0 +1,26 @@
+--- 
+
+- name: Install postgresql
+  apt:
+    name: postgresql
+    state: latest
+
+- name: Install postgresql-contrib
+  apt:
+    name: postgresql-contrib
+    state: latest
+
+- name: Create a database user for Miniflux
+  command: psql -c "CREATE USER miniflux WITH PASSWORD '{{ miniflux_db_password }}';"
+  become: true
+  become_user: postgres
+
+- name: Create a database for miniflux that belongs to our user
+  command: createdb -O miniflux miniflux
+  become: true
+  become_user: postgres
+
+- name: Create the extension hstore as superuser
+  command: psql miniflux -c 'create extension hstore'
+  become: true
+  become_user: postgres

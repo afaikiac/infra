@@ -1,0 +1,21 @@
+upstream {{ backend_name }} {
+  server {{ backend_listen }}:{{ backend_port }};
+}
+
+server {
+	# listen 80 default_server;
+	# listen [::]:80 default_server;
+
+	# SSL configuration
+
+	listen 443 ssl default_server;
+	listen [::]:443 ssl default_server;
+  
+  ssl_certificate  /etc/nginx/certificate/nginx.crt;
+  ssl_certificate_key /etc/nginx/certificate/nginx.pem;
+  server_name _;
+
+	location / {
+    proxy_pass http://{{ backend_name }};
+  }
+}

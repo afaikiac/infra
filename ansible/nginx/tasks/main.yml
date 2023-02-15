@@ -1,0 +1,55 @@
+---
+
+- name: Check mandatory variables are defined
+  assert:
+    that:
+      - backend_name is defined
+      - backend_listen is defined
+      - backend_port is defined
+ 
+- name: Install nginx
+  apt:        
+    name: nginx
+    state: latest
+
+- name: Install openssl
+  apt:
+    name: openssl
+    state: latest
+
+- name: Create certificate directory if it does not exist
+  file:
+    path: /etc/nginx/certificate
+    state: directory
+    owner: root
+    group: root
+    mode: "0700"
+
+- name: Force regenerate an OpenSSL private key (4096 bits, RSA)
+  community.crypto.openssl_privatekey:
+    path: /etc/nginx/certificate/nginx.pem
+    mode: "0600"
+    force: true
+
+- name: Force regenerate a Self Signed OpenSSL certificate
+  community.crypto.x509_certificate:
+    path: /etc/nginx/certificate/nginx.crt
+    privatekey_path: /etc/nginx/certificate/nginx.pem
+    provider: "selfsigned"
+    entrust_not_after: "+365d"
+    mode: "0600"
+    force: true
+
+- name: Copying config file
+  template:
+    src: default.j2
+    dest: /etc/nginx/sites-enabled/default
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: Enable and restart service
+  service:
+    name: nginx
+    enabled: yes
+    state: restarted

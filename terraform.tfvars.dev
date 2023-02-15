@@ -1,0 +1,6 @@
+do_token          = ""
+do_ssh_key_name   = ""
+do_droplet_region = ""
+do_droplet_size   = ""
+pvt_key           = ""
+pub_key           = ""

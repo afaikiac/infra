@@ -1,0 +1,42 @@
+--- 
+
+- name: Configure the APT Repository
+  template:
+    src: miniflux.list
+    dest: /etc/apt/sources.list.d/miniflux.list
+    owner: root
+    group: root
+    mode: "0600"
+
+- name: Install miniflux
+  apt:
+    update_cache: yes
+    name: miniflux
+    state: latest
+
+- name: Copy config file
+  template:
+    src: miniflux.conf.j2
+    dest: /etc/miniflux.conf
+    owner: root
+    group: root
+    mode: "0600"
+
+- name: Run the SQL migrations
+  command: miniflux -migrate 1> /dev/null
+  environment:
+    DATABASE_URL: "user=miniflux password={{ miniflux_db_password }} dbname=miniflux sslmode=disable"
+
+- name: Create an admin user
+  command: miniflux -create-admin 1> /dev/null
+  environment:
+    DATABASE_URL: "user=miniflux password={{ miniflux_db_password }} dbname=miniflux sslmode=disable"
+    CREATE_ADMIN: "1"
+    ADMIN_USERNAME: "{{ miniflux_admin_username }}"
+    ADMIN_PASSWORD: "{{ miniflux_admin_password }}" 
+
+- name: Enable and start service
+  service:
+    name: miniflux
+    enabled: yes
+    state: started

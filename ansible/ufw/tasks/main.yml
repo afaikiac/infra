@@ -1,0 +1,38 @@
+---
+
+# Sources:
+# https://www.digitalocean.com/community/tutorials/how-to-set-up-a-firewall-with-ufw-on-ubuntu-22-04
+
+- name: Disable UFW just in case :)
+  community.general.ufw:
+    state: disabled
+
+- name: "Ensure /etc/default/ufw contains 'IPV6=yes'"
+  lineinfile:
+    name: /etc/default/ufw
+    line: "IPV6=yes"
+    state: present
+
+- name: Default incoming policy changed to 'deny'
+  community.general.ufw:
+    policy: deny
+    direction: incoming
+
+- name: Default outgoing policy changed to 'allow'
+  community.general.ufw:
+    policy: allow
+    direction: outgoing
+
+- name: Allow OpenSSH
+  community.general.ufw:
+    rule: allow
+    name: OpenSSH
+
+- name: Allow Nginx HTTPS
+  community.general.ufw:
+    rule: allow
+    name: "Nginx HTTPS"
+
+- name: Enable UFW
+  community.general.ufw:
+    state: enabled

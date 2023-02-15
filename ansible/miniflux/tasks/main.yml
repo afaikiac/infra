@@ -1,0 +1,17 @@
+---
+- name: Read vars from file
+  include_vars:
+    file: vars.yml
+
+- name: Check mandatory variables are defined
+  assert:
+    that:
+      - miniflux_db_password is defined
+      - miniflux_admin_username is defined
+      - miniflux_admin_password is defined
+
+- name: Configure database
+  import_tasks: database.yml
+
+- name: Configure app
+  import_tasks: app.yml

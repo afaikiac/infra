@@ -1,0 +1,13 @@
+- hosts: all
+  roles:
+    - role: common
+      vars:
+        username: user
+        groupname: user
+        upgrade_system: true
+    - role: miniflux
+    - role: ufw
+      vars:
+        backend_name: "miniflux"
+        backend_listen: "127.0.0.1"
+        backend_port: 8080
