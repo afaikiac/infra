@@ -19,13 +19,12 @@ variable "do_droplet_size" {
 }
 
 # OpenSSH
-# private key location, so Terraform can use 
-# it to log in to new Droplets and install something
+# private key location
 variable "pvt_key" {
   type = string
 }
 
-# for ansible playbooks
+# public key location for ansible playbook
 variable "pub_key" {
   type = string
 }
